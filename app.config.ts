@@ -36,7 +36,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           'This app does not use Apple Music, but a system API may require this permission.',
         ITSAppUsesNonExemptEncryption: false,
       },
-      // Please use the relative path to the google-services.json file
       googleServicesFile: process.env.IOS_GOOGLE_SERVICES_FILE || process.env.EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE || './GoogleService-Info.plist',
       entitlements: { 'aps-environment': 'production' },
       associatedDomains: ['applinks:app.chatwoot.com'],
@@ -50,7 +49,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       package: process.env.ANDROID_PACKAGE || bundleId,
       versionCode: 10,
       permissions: ['android.permission.CAMERA', 'android.permission.RECORD_AUDIO'],
-      // Please use the relative path to the google-services.json file
       googleServicesFile: process.env.ANDROID_GOOGLE_SERVICES_FILE || process.env.EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE || './google-services.json',
       intentFilters: [
         {
@@ -80,10 +78,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       ...config.extra,
       eas: {
-        // projectId: '98d5a8bb-b30f-4318-9717-380d3ec2e022',
+        projectId: '101f016d-383a-4d57-9cbb-c0566ab41508',
         storybookEnabled: process.env.EXPO_STORYBOOK_ENABLED,
       },
-      // Backend URL - use environment variable or default
       backendUrl: process.env.CHATWOOT_URL || process.env.EXPO_PUBLIC_BACKEND_URL || 'https://api.notchat.me',
       appName: appName,
       primaryColor: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
@@ -98,18 +95,24 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       'expo-font',
       ['react-native-permissions', { iosPermissions: ['Camera', 'PhotoLibrary', 'MediaLibrary'] }],
-      [
-        '@sentry/react-native/expo',
-        {
-          url: 'https://sentry.io/',
-          project: process.env.EXPO_PUBLIC_SENTRY_PROJECT_NAME,
-          organization: process.env.EXPO_PUBLIC_SENTRY_ORG_NAME,
-        },
-      ],
+      // Sentry - Apenas incluído se configurado e não explicitamente desabilitado
+      ...(process.env.DISABLE_SENTRY !== 'true' && 
+          process.env.EXPO_PUBLIC_SENTRY_PROJECT_NAME && 
+          process.env.EXPO_PUBLIC_SENTRY_ORG_NAME
+        ? [
+            [
+              '@sentry/react-native/expo',
+              {
+                url: 'https://sentry.io/',
+                project: process.env.EXPO_PUBLIC_SENTRY_PROJECT_NAME,
+                organization: process.env.EXPO_PUBLIC_SENTRY_ORG_NAME,
+              },
+            ] as any,
+          ]
+        : []),
       [
         'expo-build-properties',
         {
-          // https://github.com/invertase/notifee/issues/808#issuecomment-2175934609
           android: {
             minSdkVersion: 24,
             compileSdkVersion: 35,
