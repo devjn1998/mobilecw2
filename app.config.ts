@@ -1,5 +1,8 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
+// Carrega .env.production para white-label dinâmico
+require('dotenv').config({ path: '.env.production' });
+
 export default ({ config }: ConfigContext): ExpoConfig => {
   const appName = process.env.APP_NAME || process.env.EXPO_PUBLIC_APP_NAME || 'Notchat';
   const bundleId = process.env.BUNDLE_ID || process.env.EXPO_PUBLIC_ANDROID_PACKAGE || 'com.chatwoot.app';
