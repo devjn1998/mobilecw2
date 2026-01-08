@@ -7,7 +7,7 @@ import { selectBaseUrl } from '@/store/settings/settingsSelectors';
 import { resetSettings } from '@/store/settings/settingsSlice';
 import { LinkIcon } from '@/svg-icons';
 import { BrandTokens, tailwind } from '@/theme';
-import * as Application from 'expo-application';
+import Constants from 'expo-constants';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Animated, StatusBar, TextInput, View } from 'react-native';
@@ -17,12 +17,15 @@ type FormData = {
   url: string;
 };
 
-const appIdentifier = Application.applicationName;
-
 const ConfigURLScreen = () => {
   const baseUrl = useAppSelector(selectBaseUrl);
 
   const dispatch = useAppDispatch();
+
+  // Pegar a URL do cliente do .env.production via Constants.expoConfig.extra
+  const defaultChatwootUrl = Constants.expoConfig?.extra?.chatwootUrl || 'app.chatwoot.com';
+  // Remover o protocolo https:// ou http:// da URL
+  const urlWithoutProtocol = defaultChatwootUrl.replace(/^https?:\/\//, '');
 
   const {
     control,
@@ -30,7 +33,7 @@ const ConfigURLScreen = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      url: baseUrl ? baseUrl : (appIdentifier === 'Chatwoot' || appIdentifier === 'notchat' || appIdentifier === BrandTokens.name) ? 'app.chatwoot.com' : '',
+      url: baseUrl ? baseUrl : urlWithoutProtocol,
     },
   });
 
@@ -97,7 +100,7 @@ const ConfigURLScreen = () => {
                 />
                 {errors.url && (
                   <Animated.Text style={tailwind.style('text-ruby-900')}>
-                    {errors.url.message}
+                    {String(errors.url.message || '')}
                   </Animated.Text>
                 )}
               </View>

@@ -1,4 +1,5 @@
 import { tailwind } from '@/theme';
+import BrandTokens from '@/theme/brand';
 import React, { memo } from 'react';
 import { ActivityIndicator, Pressable, Text } from 'react-native';
 
@@ -18,7 +19,7 @@ export interface ButtonProps {
 
 const variantStyles = {
   primary: {
-    container: 'bg-brand-primary active:opacity-80',
+    container: 'active:opacity-80', // Remove bg-brand-primary, será aplicado dinamicamente
     text: 'text-white',
   },
   secondary: {
@@ -82,6 +83,8 @@ export const Button = memo<ButtonProps>(
           tailwind.style('rounded-lg items-center justify-center flex-row'),
           tailwind.style(variantStyle.container),
           tailwind.style(sizeStyle.container),
+          // Aplicar cor primária dinamicamente para variant primary
+          finalVariant === 'primary' && { backgroundColor: BrandTokens.colors.primary },
           fullWidth && tailwind.style('w-full'),
           (disabled || loading) && tailwind.style('opacity-50'),
           style,

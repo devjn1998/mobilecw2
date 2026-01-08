@@ -362,18 +362,62 @@ class BackendService {
    */
   async verifyInstance(chatwootUrl: string): Promise<VerifyInstanceResponse> {
     try {
-      console.log('[BackendService] Verifying instance registration:', chatwootUrl);
+      console.log('[BackendService] ============================================');
+      console.log('[BackendService] Verifying instance registration');
+      console.log('[BackendService]   Input URL:', chatwootUrl);
+      console.log('[BackendService]   Backend URL:', this.baseUrl);
+      console.log('[BackendService]   Full request URL:', `${this.baseUrl}/api/verify-instance?chatwoot_url=${encodeURIComponent(chatwootUrl)}`);
+      console.log('[BackendService] ============================================');
+      
       const response = await this.api.get<VerifyInstanceResponse>('/api/verify-instance', {
         params: { chatwoot_url: chatwootUrl },
       });
+      
+      console.log('[BackendService] ✅ Instance verification successful:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('[BackendService] Failed to verify instance:', error);
+      console.error('[BackendService] ❌ Failed to verify instance');
       
-      if (error.response?.status === 403 || error.response?.status === 404) {
-        throw new Error(error.response.data?.message || `Instância não registrada no sistema ${BrandTokens.name}.`);
+      // Timeout error
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        console.error('[BackendService] Error type: TIMEOUT');
+        console.error('[BackendService] The request took longer than 20 seconds');
+        throw new Error('Tempo de espera esgotado. Verifique sua conexão com a internet.');
       }
       
+      // Network error (no response received)
+      if (error.request && !error.response) {
+        console.error('[BackendService] Error type: NETWORK ERROR');
+        console.error('[BackendService] No response received from backend');
+        console.error('[BackendService] Possible causes:');
+        console.error('[BackendService]   - Backend is offline');
+        console.error('[BackendService]   - No internet connection');
+        console.error('[BackendService]   - Firewall blocking the request');
+        console.error('[BackendService]   - DNS resolution failed');
+        throw new Error('Não foi possível conectar ao servidor. Verifique sua conexão com a internet.');
+      }
+      
+      // HTTP error response
+      if (error.response) {
+        console.error('[BackendService] Error type: HTTP ERROR');
+        console.error('[BackendService] Status:', error.response.status);
+        console.error('[BackendService] Response data:', error.response.data);
+        
+        if (error.response.status === 403 || error.response.status === 404) {
+          const message = error.response.data?.message || `Instância não registrada no sistema ${BrandTokens.name}.`;
+          console.error('[BackendService] Instance not registered:', message);
+          throw new Error(message);
+        }
+        
+        if (error.response.status === 500) {
+          console.error('[BackendService] Backend internal error');
+          throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+        }
+      }
+      
+      // Unknown error
+      console.error('[BackendService] Error type: UNKNOWN');
+      console.error('[BackendService] Error details:', error);
       throw new Error('Erro ao validar a instância. Verifique sua conexão.');
     }
   }

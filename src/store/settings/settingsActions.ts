@@ -249,9 +249,18 @@ export const settingsActions = {
     'settings/verifyInstance',
     async (installationUrl, { rejectWithValue }) => {
       try {
+        console.log('[NOTCHAT] ============================================');
+        console.log('[NOTCHAT] Starting instance verification');
+        console.log('[NOTCHAT]   Installation URL:', installationUrl);
+        console.log('[NOTCHAT]   Backend URL:', backendService.getBaseUrl());
+        console.log('[NOTCHAT] ============================================');
+        
         await backendService.verifyInstance(installationUrl);
+        
+        console.log('[NOTCHAT] ✅ Instance verification completed successfully');
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
+        console.error('[NOTCHAT] ❌ Instance verification failed:', message);
         showToast({ message });
         return rejectWithValue(message);
       }

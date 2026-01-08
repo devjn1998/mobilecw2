@@ -3,6 +3,7 @@ import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { tailwind } from '@/theme';
+import BrandTokens from '@/theme/brand';
 import { Icon } from '../common/icon/Icon';
 
 type AuthButtonProps = {
@@ -24,10 +25,14 @@ export const AuthButton = ({
 }: AuthButtonProps) => {
   const getButtonStyles = () => {
     const baseStyles = 'py-[11px] flex-row items-center justify-center rounded-[13px]';
-    const variantStyles = variant === 'filled' ? 'bg-brand-primary' : 'bg-gray-50';
+    const variantStyles = variant === 'filled' ? '' : 'bg-gray-50';
     const disabledStyles = disabled ? 'opacity-50' : '';
 
-    return tailwind.style(baseStyles, variantStyles, disabledStyles);
+    return [
+      tailwind.style(baseStyles, variantStyles, disabledStyles),
+      // Aplicar cor primária dinamicamente para variant filled
+      variant === 'filled' && { backgroundColor: BrandTokens.colors.primary },
+    ];
   };
 
   const getTextStyles = () => {
@@ -38,7 +43,7 @@ export const AuthButton = ({
   };
 
   return (
-    <Pressable style={[getButtonStyles(), style]} onPress={handlePress} disabled={disabled}>
+    <Pressable style={[...getButtonStyles(), style]} onPress={handlePress} disabled={disabled}>
       <Icon size={16} icon={icon} />
       <Animated.Text style={getTextStyles()}>{text}</Animated.Text>
     </Pressable>
