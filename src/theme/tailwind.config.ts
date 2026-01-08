@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+
+// Carregar .env.production ANTES de tudo
+require('dotenv').config({ path: '.env.production' });
+
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 // Light theme colors
@@ -12,6 +16,11 @@ const blackA = require('./colors/blackA');
 const whiteA = require('./colors/whiteA');
 
 const { BrandTokens } = require('./brand');
+
+// DEBUG: Log para verificar cores do .env
+console.log('[Tailwind Config] PRIMARY_COLOR env:', process.env.PRIMARY_COLOR);
+console.log('[Tailwind Config] EXPO_PUBLIC_PRIMARY_COLOR env:', process.env.EXPO_PUBLIC_PRIMARY_COLOR);
+console.log('[Tailwind Config] BrandTokens.colors.primary:', BrandTokens.colors.primary);
 
 const notchatAppColors = {
   ...blackA,

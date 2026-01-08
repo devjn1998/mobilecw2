@@ -11,6 +11,10 @@ import Constants from 'expo-constants';
 
 const extra = Constants.expoConfig?.extra || {};
 
+// DEBUG: Log para verificar se está pegando a cor correta
+console.log('[BrandTokens] Primary Color:', extra.primaryColor);
+console.log('[BrandTokens] Extra:', JSON.stringify(extra, null, 2));
+
 export const BrandTokens = {
   name: extra.appName || 'Notchat',
   version: extra.minChatwootVersion || '2.7.0',
