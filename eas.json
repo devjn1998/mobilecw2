@@ -15,14 +15,15 @@
       "env": {
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "EXPO_USE_COMMUNITY_AUTOLINKING": "1"
-      },
+      }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "SENTRY_DISABLE_AUTO_UPLOAD": "true",
         "EXPO_USE_COMMUNITY_AUTOLINKING": "1"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {

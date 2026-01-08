@@ -29,7 +29,22 @@ export const twConfig = {
   theme: {
     ...defaultTheme,
     extend: {
-      colors: { ...notchatAppColors },
+      colors: { 
+        ...notchatAppColors,
+        // Sobrescrever blues do Tailwind com a cor primária do cliente
+        blue: {
+          50: '#EFF8FF',   // Mantém tons claros
+          100: '#DBEEFF',
+          200: '#BFE1FF',
+          300: '#93CCFF',
+          400: '#60ACFF',
+          500: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
+          600: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
+          700: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
+          800: '#1E3A5F',
+          900: '#1A2F4A',
+        },
+      },
       fontSize: {
         xs: '12px',
         cxs: '13px',
