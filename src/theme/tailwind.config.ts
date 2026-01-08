@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-
-// Carregar .env.production ANTES de tudo
-require('dotenv').config({ path: '.env.production' });
-
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 // Light theme colors
@@ -16,11 +12,6 @@ const blackA = require('./colors/blackA');
 const whiteA = require('./colors/whiteA');
 
 const { BrandTokens } = require('./brand');
-
-// DEBUG: Log para verificar cores do .env
-console.log('[Tailwind Config] PRIMARY_COLOR env:', process.env.PRIMARY_COLOR);
-console.log('[Tailwind Config] EXPO_PUBLIC_PRIMARY_COLOR env:', process.env.EXPO_PUBLIC_PRIMARY_COLOR);
-console.log('[Tailwind Config] BrandTokens.colors.primary:', BrandTokens.colors.primary);
 
 const notchatAppColors = {
   ...blackA,
@@ -47,9 +38,9 @@ export const twConfig = {
           200: '#BFE1FF',
           300: '#93CCFF',
           400: '#60ACFF',
-          500: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
-          600: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
-          700: process.env.PRIMARY_COLOR || process.env.EXPO_PUBLIC_PRIMARY_COLOR || '#1FB6FF',
+          500: BrandTokens.colors.primary,  // Usa direto do BrandTokens
+          600: BrandTokens.colors.primary,  // Usa direto do BrandTokens
+          700: BrandTokens.colors.primary,  // Usa direto do BrandTokens
           800: '#1E3A5F',
           900: '#1A2F4A',
         },
