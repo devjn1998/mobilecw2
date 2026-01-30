@@ -1,33 +1,33 @@
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, StatusBar, Text } from 'react-native';
 import Animated, {
-  LinearTransition,
-  runOnJS,
-  SharedValue,
-  useAnimatedScrollHandler,
+    LinearTransition,
+    runOnJS,
+    SharedValue,
+    useAnimatedScrollHandler,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FlashList, ListRenderItem } from '@shopify/flash-list';
 
 import { TAB_BAR_HEIGHT } from '@/constants';
-import { InboxListStateProvider } from '@/context';
-import type { Notification } from '@/types/Notification';
-import { tailwind } from '@/theme';
+import { InboxListStateProvider, useInboxListStateContext } from '@/context';
 import { useAppDispatch, useAppSelector } from '@/hooks';
-import { notificationActions } from '@/store/notification/notificationAction';
-import {
-  selectIsAllNotificationsFetched,
-  selectIsLoadingNotifications,
-  getFilteredNotifications,
-} from '@/store/notification/notificationSelectors';
-import { InboxHeader, InboxItemContainer } from './components';
-import { useInboxListStateContext } from '@/context';
-import { resetNotifications } from '@/store/notification/notificationSlice';
-import { showToast } from '@/utils/toastUtils';
 import i18n from '@/i18n';
+import { notificationActions } from '@/store/notification/notificationAction';
 import { selectSortOrder } from '@/store/notification/notificationFilterSlice';
-import { EmptyStateIcon } from '@/svg-icons';
+import {
+    getFilteredNotifications,
+    selectIsAllNotificationsFetched,
+    selectIsLoadingNotifications,
+} from '@/store/notification/notificationSelectors';
+import { resetNotifications } from '@/store/notification/notificationSlice';
 import { InboxSortTypes } from '@/store/notification/notificationTypes';
+import { EmptyStateIcon } from '@/svg-icons';
+import { tailwind } from '@/theme';
+import type { Notification } from '@/types/Notification';
+import { InboxHeader, InboxItemContainer } from './components';
+import { CreateTicketModal } from './components/CreateTicketModal';
 
 const AnimatedFlashlist = Animated.createAnimatedComponent(FlashList<Notification>);
 
@@ -168,28 +168,42 @@ const InboxList = () => {
   );
 };
 
-const InboxScreen = () => {
+export const InboxScreen = () => {
   const dispatch = useAppDispatch();
+  const createTicketModalRef = useRef<BottomSheetModal>(null);
 
-  // Memoize the markAllAsRead callback
-  const markAllAsRead = useCallback(async () => {
-    await dispatch(notificationActions.markAllAsRead());
-    showToast({
-      message: i18n.t('NOTIFICATION.ALERTS.MARK_ALL_READ'),
-    });
+  const handleMarkAllAsRead = useCallback(() => {
+    dispatch(notificationActions.markAllAsRead());
   }, [dispatch]);
 
+  const handleCreateTicket = () => {
+    createTicketModalRef.current?.present();
+  };
+
   return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={tailwind.style('flex-1 bg-white')}>
       <StatusBar
         translucent
         backgroundColor={tailwind.color('bg-white')}
         barStyle={'dark-content'}
       />
       <InboxListStateProvider>
-        <InboxHeader markAllAsRead={markAllAsRead} />
+        <InboxHeader markAllAsRead={handleMarkAllAsRead} />
         <InboxList />
       </InboxListStateProvider>
+      <Pressable
+        onPress={handleCreateTicket}
+        style={tailwind.style(
+          'absolute right-4 w-14 h-14 bg-blue-600 rounded-full items-center justify-center shadow-lg',
+          `bottom-[${TAB_BAR_HEIGHT + 24}px]`,
+          'z-50'
+        )}>
+        <Text style={tailwind.style('text-white text-3xl pb-1')}>+</Text>
+      </Pressable>
+      <CreateTicketModal
+        ref={createTicketModalRef}
+        onClose={() => createTicketModalRef.current?.dismiss()}
+      />
     </SafeAreaView>
   );
 };

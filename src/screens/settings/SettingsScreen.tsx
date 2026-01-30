@@ -13,9 +13,9 @@ import { resetNotifications } from '@/store/notification/notificationSlice';
 import { Account, AvailabilityStatus } from '@/types';
 import ChatWootWidget from '@chatwoot/react-native-widget';
 import {
-  BottomSheetModal,
-  BottomSheetScrollView,
-  useBottomSheetSpringConfigs,
+    BottomSheetModal,
+    BottomSheetScrollView,
+    useBottomSheetSpringConfigs,
 } from '@gorhom/bottom-sheet';
 import * as Application from 'expo-application';
 import * as WebBrowser from 'expo-web-browser';
@@ -27,36 +27,36 @@ import { BrandTokens, tailwind } from '@/theme';
 import i18n from 'i18n';
 
 import {
-  AvailabilityStatusList,
-  BottomSheetBackdrop,
-  BottomSheetHeader,
-  BottomSheetWrapper,
-  Button,
-  LanguageList,
-  NotificationPreferences,
-  SettingsList,
-  SwitchAccount,
+    AvailabilityStatusList,
+    BottomSheetBackdrop,
+    BottomSheetHeader,
+    BottomSheetWrapper,
+    Button,
+    LanguageList,
+    NotificationPreferences,
+    SettingsList,
+    SwitchAccount,
 } from '@/components-next';
 import { UserAvatar } from './components/UserAvatar';
 
 import { LANGUAGES, TAB_BAR_HEIGHT } from '@/constants';
 import { useRefsContext } from '@/context';
-import { NotchatIcon, NotificationIcon, SwitchIcon, TranslateIcon } from '@/svg-icons';
+import { NotificationIcon, SwitchIcon, TranslateIcon } from '@/svg-icons';
 import { GenericListType } from '@/types';
 
 import { backendService } from '@/services/BackendService';
 import { authActions } from '@/store/auth/authActions';
 import {
-  selectAccounts,
-  selectCurrentUserAvailability,
-  selectUser,
+    selectAccounts,
+    selectCurrentUserAvailability,
+    selectUser,
 } from '@/store/auth/authSelectors';
 import { logout, resetAuth, setAccount } from '@/store/auth/authSlice';
 import { settingsActions } from '@/store/settings/settingsActions';
 import {
-  selectIsCloud,
-  selectLocale,
-  selectPushToken,
+    selectIsCloud,
+    selectLocale,
+    selectPushToken,
 } from '@/store/settings/settingsSelectors';
 import { setLocale, setTokenValid } from '@/store/settings/settingsSlice';
 import { useHaptic } from '@/utils';
@@ -278,24 +278,7 @@ const SettingsScreen = () => {
     },
   ];
 
-  const supportList: GenericListType[] = [
-    {
-      hasChevron: true,
-      title: i18n.t('SETTINGS.READ_DOCS'),
-      icon: <SwitchIcon />,
-      subtitle: '',
-      subtitleType: 'light',
-      onPressListItem: openURL,
-    },
-    {
-      hasChevron: true,
-      title: i18n.t('SETTINGS.CHAT_WITH_US'),
-      icon: <NotchatIcon />,
-      subtitle: '',
-      subtitleType: 'light',
-      onPressListItem: () => toggleWidget(true),
-    },
-  ];
+
 
   return (
     <SafeAreaView style={tailwind.style('flex-1 bg-white font-inter-normal-20')}>
@@ -334,9 +317,7 @@ const SettingsScreen = () => {
         <Animated.View style={tailwind.style('pt-6')}>
           <SettingsList sectionTitle={i18n.t('SETTINGS.PREFERENCES')} list={preferencesList} />
         </Animated.View>
-        <Animated.View style={tailwind.style('pt-6')}>
-          <SettingsList sectionTitle={i18n.t('SETTINGS.SUPPORT')} list={supportList} />
-        </Animated.View>
+
         <Animated.View style={tailwind.style('pt-6 mx-4')}>
           <Button
             variant="secondary"

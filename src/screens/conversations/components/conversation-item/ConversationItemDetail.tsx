@@ -10,7 +10,7 @@ import { AnimatedNativeView, NativeView } from '@/components-next/native-compone
 import { tailwind } from '@/theme';
 import { Agent, Conversation, ConversationAdditionalAttributes, Label, Message } from '@/types';
 
-import { ChannelIndicator, PriorityIndicator } from '@/components-next/list-components';
+import { PriorityIndicator } from '@/components-next/list-components';
 import { SLA } from '@/types/common/SLA';
 import { Inbox } from '@/types/Inbox';
 import { ConversationId } from './ConversationId';
@@ -19,7 +19,6 @@ import { LabelIndicator } from './LabelIndicator';
 import { LastActivityTime } from './LastActivityTime';
 import { SLAIndicator } from './SLAIndicator';
 import { TypingMessage } from './TypingMessage';
-import { UnreadIndicator } from './UnreadIndicator';
 
 const { width } = Dimensions.get('screen');
 
@@ -117,7 +116,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
         </AnimatedNativeView>
         <AnimatedNativeView style={tailwind.style('flex flex-row items-center gap-2')}>
           {hasPriority ? <PriorityIndicator {...{ priority }} /> : null}
-          {inbox && <ChannelIndicator inbox={inbox} additionalAttributes={additionalAttributes} />}
+          {/* {inbox && <ChannelIndicator inbox={inbox} additionalAttributes={additionalAttributes} />} */}
           <LastActivityTime timestamp={timestamp} />
         </AnimatedNativeView>
       </AnimatedNativeView>
@@ -133,7 +132,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
 
             {unreadCount >= 1 && (
               <NativeView style={tailwind.style('flex-shrink-0')}>
-                <UnreadIndicator count={unreadCount} />
+                {/* <UnreadIndicator count={unreadCount} /> */}
               </NativeView>
             )}
           </AnimatedNativeView>
@@ -218,7 +217,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
               </NativeView>
             ) : null}
 
-            {unreadCount >= 1 && <UnreadIndicator count={unreadCount} />}
+            {/* {unreadCount >= 1 && <UnreadIndicator count={unreadCount} />} */}
           </AnimatedNativeView>
         </AnimatedNativeView>
       )}

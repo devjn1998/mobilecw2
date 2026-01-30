@@ -1,15 +1,14 @@
-import React from 'react';
-import Animated from 'react-native-reanimated';
 import { Avatar } from '@/components-next';
+import { PriorityIndicator } from '@/components-next/list-components';
+import { AnimatedNativeView, NativeView } from '@/components-next/native-components';
 import { tailwind } from '@/theme';
 import type { NotificationType } from '@/types/Notification';
 import { ConversationPriority } from '@/types/common';
-import { AnimatedNativeView, NativeView } from '@/components-next/native-components';
-import { PriorityIndicator, ChannelIndicator } from '@/components-next/list-components';
+import React from 'react';
+import Animated from 'react-native-reanimated';
 
-import { Inbox } from '@/types/Inbox';
 import { ConversationAdditionalAttributes } from '@/types/Conversation';
-import { NotificationTypeIndicator } from './NotificationTypeIndicator';
+import { Inbox } from '@/types/Inbox';
 import { Dimensions } from 'react-native';
 
 type InboxItemProps = {
@@ -75,9 +74,9 @@ export const InboxItemComponent = (props: InboxItemProps) => {
           </AnimatedNativeView>
           <AnimatedNativeView style={tailwind.style('flex flex-row items-center gap-2')}>
             {priority ? <PriorityIndicator {...{ priority }} /> : null}
-            {inbox && (
+            {/* {inbox && (
               <ChannelIndicator inbox={inbox} additionalAttributes={additionalAttributes} />
-            )}
+            )} */}
             <NativeView>
               <Animated.Text
                 style={tailwind.style(
@@ -108,7 +107,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
               {pushMessageTitle}
             </Animated.Text>
           </Animated.View>
-          <NotificationTypeIndicator type={notificationType} />
+          {/* <NotificationTypeIndicator type={notificationType} /> */}
         </Animated.View>
       </Animated.View>
       {isRead && (

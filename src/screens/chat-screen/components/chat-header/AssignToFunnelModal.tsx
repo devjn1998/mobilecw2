@@ -1,5 +1,6 @@
 import { BottomSheetBackdrop, BottomSheetWrapper } from '@/components-next';
 import { useAppDispatch, useAppSelector } from '@/hooks';
+import { selectUser } from '@/store/auth/authSelectors';
 import { selectConversationById } from '@/store/conversation/conversationSelectors';
 import { kanbanActions } from '@/store/kanban/kanbanActions';
 import { selectCurrentKanbanFunnel } from '@/store/kanban/kanbanSelectors';
@@ -7,9 +8,9 @@ import type { KanbanFunnel } from '@/store/kanban/kanbanTypes';
 import { tailwind } from '@/theme';
 import { showToast } from '@/utils/toastUtils';
 import {
-  BottomSheetModal,
-  BottomSheetScrollView,
-  useBottomSheetSpringConfigs,
+    BottomSheetModal,
+    BottomSheetScrollView,
+    useBottomSheetSpringConfigs,
 } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -22,6 +23,7 @@ interface AssignToFunnelModalProps {
 export const AssignToFunnelModal = React.forwardRef<BottomSheetModal, AssignToFunnelModalProps>(
   ({ conversationId, funnels }, ref) => {
     const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
     const conversation = useAppSelector(state => selectConversationById(state, conversationId));
     const currentFunnel = useAppSelector(selectCurrentKanbanFunnel);
     const [selectedFunnelId, setSelectedFunnelId] = useState<number | null>(null);
@@ -47,13 +49,50 @@ export const AssignToFunnelModal = React.forwardRef<BottomSheetModal, AssignToFu
       }
     }, [dispatch, selectedFunnelId]);
 
+    const filteredFunnels = useMemo(() => {
+     if (!funnels || !user) return [];
+
+     // Filtro unificado idêntico ao KanbanBoardsListScreen
+     return funnels.filter(funnel => {
+       
+       // 1. Verifica se é membro do board
+       const allocatedAgents = funnel.settings?.agents || [];
+       const isMember = allocatedAgents.some((agent: any) => {
+         const agentId = typeof agent === 'number' ? agent : agent.id;
+         return agentId === user.id;
+       });
+
+       if (isMember) return true;
+
+       // 2. Se não for membro, verifica se tem items (cards) atribuídos a ele
+       if (!funnel.stages || !Array.isArray(funnel.stages)) return false;
+
+       const hasAssignedItem = funnel.stages.some(stage => {
+         if (!stage.items || !Array.isArray(stage.items)) return false;
+
+         return stage.items.some(item => {
+            // Verifica se o item está atribuído ao agente
+            const isAssignedToAgent = item.assignees?.some(assignee => assignee.id === user.id);
+            
+            // Verifica se a CONVERSA vinculada ao item está atribuída ao agente
+            const conversationAssigneeId = item.conversation?.assignee?.id || item.conversation?.meta?.assignee?.id;
+            const isConversationAssigned = conversationAssigneeId === user.id;
+            
+            return isAssignedToAgent || isConversationAssigned;
+         });
+       });
+
+       return hasAssignedItem;
+     });
+    }, [funnels, user]);
+
     const selectedFunnel = useMemo(() => {
       // Se o funil selecionado for o currentFunnel, usar ele (pode ter stages mais atualizados)
       if (currentFunnel?.id === selectedFunnelId) {
         return currentFunnel;
       }
-      return funnels.find(f => f.id === selectedFunnelId);
-    }, [funnels, selectedFunnelId, currentFunnel]);
+      return filteredFunnels.find(f => f.id === selectedFunnelId);
+    }, [filteredFunnels, selectedFunnelId, currentFunnel]);
 
     const availableStages = useMemo(() => {
       if (!selectedFunnel?.stages || !Array.isArray(selectedFunnel.stages)) return [];
@@ -128,7 +167,7 @@ export const AssignToFunnelModal = React.forwardRef<BottomSheetModal, AssignToFu
               <Text style={tailwind.style('text-base font-inter-medium-24 text-gray-950 mb-2')}>
                 Selecione o Funil
               </Text>
-              {funnels.length === 0 ? (
+              {filteredFunnels.length === 0 ? (
                 <View style={tailwind.style('bg-gray-50 rounded-lg p-4 items-center')}>
                   <Text style={tailwind.style('text-sm text-gray-500')}>
                     Nenhum funil disponível
@@ -136,7 +175,7 @@ export const AssignToFunnelModal = React.forwardRef<BottomSheetModal, AssignToFu
                 </View>
               ) : (
                 <View style={tailwind.style('gap-2')}>
-                  {funnels.map(funnel => (
+                  {filteredFunnels.map(funnel => (
                     <Pressable
                       key={funnel.id}
                       onPress={() => {

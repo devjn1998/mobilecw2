@@ -12,14 +12,14 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Pressable,
-  RefreshControl,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    Pressable,
+    RefreshControl,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    View,
 } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { CreateStageModal } from './components/CreateStageModal';
@@ -259,9 +259,9 @@ export function KanbanBoardScreen() {
           scrollEventThrottle={16}
           style={tailwind.style('flex-1')}
           contentContainerStyle={tailwind.style('p-4')}>
-          {sortedStages.map(stage => (
+          {sortedStages.map((stage, index) => (
             <KanbanStage
-              key={stage.id}
+              key={`${stage.id}-${index}`}
               stage={stage}
               funnelId={funnel.id}
               scrollViewRef={scrollViewRef}

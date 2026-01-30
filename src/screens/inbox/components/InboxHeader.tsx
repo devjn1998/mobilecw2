@@ -1,19 +1,20 @@
+import { BottomSheetModal, useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 import React from 'react';
 import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { BottomSheetModal, useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 
 import { BottomSheetBackdrop, BottomSheetWrapper } from '@/components-next';
 
 import { Icon } from '@/components-next/common/icon';
+import { useRefsContext } from '@/context';
+import i18n from '@/i18n';
 import { DoubleCheckIcon, InboxFilterIcon } from '@/svg-icons';
 import { tailwind } from '@/theme';
 import { InboxFilters } from './InboxFilters';
-import i18n from '@/i18n';
-import { useRefsContext } from '@/context';
 
 type InboxHeaderProps = {
   markAllAsRead: () => void;
+  // onCreateTicket: () => void;
 };
 
 export const InboxHeader = (props: InboxHeaderProps) => {
@@ -50,6 +51,9 @@ export const InboxHeader = (props: InboxHeaderProps) => {
           <Pressable onPress={handleToggleState} hitSlop={16}>
             <Icon icon={<InboxFilterIcon />} size={24} />
           </Pressable>
+          {/* <Pressable onPress={onCreateTicket} hitSlop={16} style={tailwind.style('ml-4')}>
+             <Icon icon={<Plus />} size={24} /> 
+          </Pressable> */}
         </Animated.View>
       </Animated.View>
       <BottomSheetModal

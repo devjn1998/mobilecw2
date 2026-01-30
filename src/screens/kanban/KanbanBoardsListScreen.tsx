@@ -1,16 +1,17 @@
 import { Icon, Spinner } from '@/components-next';
 import { useAppDispatch, useAppSelector } from '@/hooks';
+import { selectUser } from '@/store/auth/authSelectors';
 import { kanbanActions } from '@/store/kanban/kanbanActions';
 import {
-  selectKanbanError,
-  selectKanbanFunnels,
-  selectKanbanIsLoading,
+    selectKanbanError,
+    selectKanbanFunnels,
+    selectKanbanIsLoading,
 } from '@/store/kanban/kanbanSelectors';
 import { Overflow } from '@/svg-icons';
 import { tailwind } from '@/theme';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EditFunnelModal } from './components/EditFunnelModal';
@@ -23,6 +24,7 @@ export const KanbanBoardsListScreen = () => {
   const isLoading = useAppSelector(selectKanbanIsLoading);
   const error = useAppSelector(selectKanbanError);
   const accountId = useAppSelector(state => state.auth.user?.account_id);
+  const user = useAppSelector(selectUser);
   const editFunnelModalRef = useRef<BottomSheetModal>(null);
   const [selectedFunnel, setSelectedFunnel] = useState<(typeof funnels)[0] | null>(null);
 
@@ -31,6 +33,51 @@ export const KanbanBoardsListScreen = () => {
       dispatch(kanbanActions.getFunnels());
     }
   }, [dispatch, accountId]);
+
+  const filteredFunnels = useMemo(() => {
+    if (!funnels || !user) return [];
+    if (!funnels || !user) return [];
+    
+    // Filtro unificado para todos (incluindo admins)
+    return funnels.filter(funnel => {
+      
+      // 1. Verific se é membro do board
+      const allocatedAgents = funnel.settings?.agents || [];
+      const isMember = allocatedAgents.some((agent: any) => {
+        const agentId = typeof agent === 'number' ? agent : agent.id;
+        return agentId === user.id;
+      });
+
+
+
+      if (isMember) return true;
+
+      // 2. Verifica se tem itens atribuídos neste funil (recursivo)
+      // "Kanban Boards deve mostrar apenas os funis que o agente tem item atribuído"
+      const stages = Array.isArray(funnel.stages) ? funnel.stages : (funnel.stages ? Object.values(funnel.stages) : []);
+      
+      const hasAssignedItem = stages.some((stage: any) => {
+        const items = Array.isArray(stage.items) ? stage.items : [];
+        return items.some((item: any) => {
+           // Verifica agentes atribuídos ao item
+           const assignedAgents = item.assigned_agents || [];
+           const isAssignedToAgent = assignedAgents.some((a: any) => a.id === user.id);
+           
+           // Verifica responsável pela conversa
+           const conversationAssigneeId = item.conversation?.assignee?.id || item.conversation?.meta?.assignee?.id;
+           const isConversationAssigned = conversationAssigneeId === user.id;
+           
+
+
+           return isAssignedToAgent || isConversationAssigned;
+        });
+      });
+
+
+
+      return hasAssignedItem;
+    });
+  }, [funnels, user]);
 
   const handleRefresh = () => {
     dispatch(kanbanActions.getFunnels());
@@ -92,7 +139,7 @@ export const KanbanBoardsListScreen = () => {
       )}
 
       <FlatList
-        data={funnels || []}
+        data={filteredFunnels || []}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={[
           tailwind.style('p-4'),
